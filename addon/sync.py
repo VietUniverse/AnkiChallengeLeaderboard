@@ -19,17 +19,19 @@ def sync_data():
             popup("You haven't studied today")
             return
         
-        retention = ((review_data) / cards_data) * 100 if cards_data > 0 else 0
-        xp_data = "%0.2f"%(((time_data / 1440)*100) * ((2 * review_data) + (time_data * retention)))
+        retention = (review_data / cards_data) * 100 if cards_data > 0 else 0
+        xp_data = ((time_data / 1440) * 100) * ((2 * review_data) + (time_data * retention))
+        xp_data = f"{xp_data:.2f}"
+
         response = requests.post(
             f"{API_URL}/update.php",
             data={
                 "token": user_token,
                 "cards": cards_data,
                 "reviews": review_data,
-                "time": time_data,
+                "time": f"{time_data:.2f}",
                 "xp_today": xp_data,
-                "retention": retention,
+                "retention": f"{retention:.2f}",
             }
         )
 
@@ -70,7 +72,7 @@ def gather_time_data():
             total_time += row[0]
             
         minutes_difference = total_time / 60000
-        return "%0.2f"%(minutes_difference)
+        return minutes_difference
 
     except Exception as e:
         mw.showInfo(f"An error occurred: {e}")
