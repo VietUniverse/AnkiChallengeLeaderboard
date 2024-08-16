@@ -29,7 +29,7 @@ def setup_menu():
     if hasattr(mw, 'NAL_PB') and mw.NAL_PB and mw.NAL_PB.get('user'):
         show_profile_action = QAction("Show Profile", mw)
         def show_profile():
-            url = QUrl(LEADERBOARD_WEBSITE + 'profile' + mw.NAL_PB['user']['id'])
+            url = QUrl(LEADERBOARD_WEBSITE + 'profile.php?username=' + mw.NAL_PB['user']['username'])
             QDesktopServices.openUrl(url)
         qconnect(show_profile_action.triggered, show_profile)
         menu.addAction(show_profile_action)
@@ -38,8 +38,6 @@ def setup_menu():
 
         logout_action = QAction("Logout", mw)
         def logout():
-            response = requests.post(f"{API_URL}", data={"logout": True})
-            if response.status_code == 200:
                 mw.NAL_PB = None
                 if os.path.exists(META_PATH):
                     with open(META_PATH, "r") as meta_file:
@@ -53,8 +51,6 @@ def setup_menu():
                         json.dump(meta_data, meta_file, indent=4)
 
                 setup_menu()
-            else:
-                popup("Logout failed")
         qconnect(logout_action.triggered, logout)
         menu.addAction(logout_action)
 

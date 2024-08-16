@@ -19,19 +19,18 @@ def sync_data():
             popup("You haven't studied today")
             return
         
-        retention = (review_data / cards_data) * 100 if cards_data > 0 else 0
-        xp_data = ((time_data / 1440) * 100) * ((2 * review_data) + (time_data * retention))
-        xp_data = f"{xp_data:.2f}"
-
+        retention = ((review_data) / cards_data) * 100 if cards_data > 0 else 0
+        xp_data = "%0.2f"%(((time_data / 1440)*100) * ((2 * review_data) + (time_data * retention)))
         response = requests.post(
             f"{API_URL}/update.php",
             data={
+                "type": "leaderboard",
                 "token": user_token,
                 "cards": cards_data,
                 "reviews": review_data,
-                "time": f"{time_data:.2f}",
+                "time": "%0.2f"%(time_data),
                 "xp_today": xp_data,
-                "retention": f"{retention:.2f}",
+                "retention": "%0.2f"%(retention),
             }
         )
 

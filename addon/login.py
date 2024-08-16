@@ -50,7 +50,7 @@ class LoginDialog(QWidget):
 def login_user(user, password) -> None:
     try:
         response = requests.post(
-            f"{API_URL}/login_addon.php",
+            f"{API_URL}/login.php",
             data={"username": user, "password": password}
         )
 
