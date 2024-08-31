@@ -107,8 +107,8 @@
             </table>
         </section>
         <section class="under_board">
-            <button class="src">Source</button>
-            <button class="addon">AnkiAddon</button>
+            <button class="src" onclick="window.location.href='https://github.com/VietUniverse/AnkiChallengeLeaderboard'">Source</button>
+            <button class="addon" onclick="window.location.href='https://ankiweb.net/shared/info/1371172900'">AnkiAddon</button>
         </section>
         <footer>
             <p>Made by VietLe & KhiemPham</p>
@@ -119,18 +119,19 @@
             var selectedValue = event.target.value;
             fetchData(selectedValue);
         }
-
+    
         function redirectToPage(url) {
             window.location.href = url;
         }
-
-        function fetchData(type) {
+    
+        function fetchData(boardType, sortBy) {
             const data = {
                 type: 'leaderboard',
-                board_type: type
+                board_type: boardType,
+                sort_by: sortBy
             };
             const urlEncodedData = new URLSearchParams(data).toString();
-
+        
             fetch('api/info.php', {
                 method: 'POST',
                 headers: {
@@ -143,7 +144,7 @@
                     const tableBody = document.querySelector('.board tbody');
                     tableBody.innerHTML = '';
                     let res = 1;
-
+        
                     data.forEach(row => {
                         const formattedTime = parseFloat(row.time).toFixed(2);
                         const formattedReten = parseFloat(row.retention).toFixed(2) + "%";
@@ -163,6 +164,7 @@
                 .catch(error => console.error('Error fetching data:', error));
         }
 
+    
         function getCookie(name) {
             let cookieArr = document.cookie.split(";");
             for (let i = 0; i < cookieArr.length; i++) {
@@ -173,11 +175,11 @@
             }
             return null;
         }
-
+    
         function checkUserAuthentication() {
             let username = getCookie("username");
             let token = getCookie("token");
-
+    
             if (username && token) {
                 document.getElementById("welcome-message").innerText = `Welcome, ${username}`;
                 document.getElementById("welcome-message").style.display = "inline";
@@ -191,39 +193,42 @@
                 document.getElementById("logout-button").style.display = "none";
             }
         }
-
+    
         function logoutUser() {
             document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             window.location.reload();
         }
+    
         function showPopup(message) {
             const popup = document.getElementById('popup');
             popup.textContent = message;
             popup.style.display = 'block';
-
+    
             setTimeout(function () {
                 popup.style.display = 'none';
             }, 500);
         }
-
+    
         document.getElementById('retentionButton').addEventListener('click', function () {
-            showPopup('Retention');
+            showPopup('Retention Sorted');
+            fetchData('today', 'retention');
         });
-
+        
         document.getElementById('reviewButton').addEventListener('click', function () {
-            showPopup('Review');
+            showPopup('Review Sorted');
+            fetchData('today', 'reviews');
         });
-
+        
         document.getElementById('timeButton').addEventListener('click', function () {
-            showPopup('Time');
+            showPopup('Time Sorted');
+            fetchData('today', 'time');
         });
-
+    
         window.onload = function () {
-            fetchData('today');
+            fetchData('today', 'xp');
             checkUserAuthentication();
         };
     </script>
 </body>
-
 </html>
