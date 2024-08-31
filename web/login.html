@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnkiChallengeLeaderboard</title>
+    <link rel="stylesheet" href="static/styles_log.css">
+    <script>
+        function redirectToPage(url) {
+            window.location.href = url;
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            
+            var username = document.getElementById('name').value;
+            var password = document.getElementById('pass').value;
+
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            var formData = new FormData();
+            if (emailPattern.test(username)) {
+                formData.append('email', username);
+            } else {
+                formData.append('username', username);
+            }
+            formData.append('password', password);
+
+            fetch('api/login.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert('Login successful!');
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Anki Challenge Leaderboard</h1>
+    </header>
+    <section class="under_head">
+        <ul>
+            <li class="log"><strong>Login</strong></li>
+            <li class="board"><button class="but_board" onclick="redirectToPage('index.html')">Leaderboard</button></li>
+        </ul>
+    </section>
+    <section class="user_login">
+        <p>Don't have an account? <a href="register.html">Register here!</a></p>
+        <label for="name">Username or Email</label>
+        <input type="text" id="name" required placeholder="Input your Username" minlength="3" maxlength="20">
+        <label for="pass">Password</label>
+        <input type="password" id="pass" required placeholder="Input your Password" minlength="8" maxlength="50">
+        <p>Forget your Password? <a href="#">Click here!</a></p>
+        <button class="logbut" onclick="loginUser(event)">Login</button>
+    </section>
+    <section class="under_board">
+        <button class="src">Source</button>
+        <button class="addon">AnkiAddon</button>
+    </section>
+    <footer>
+        <p>Made by VietLe & KhiemPham</p>
+    </footer>
+</body>
+</html>

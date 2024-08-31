@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anki Challenge Leaderboard</title>
+    <link rel="stylesheet" href="static/style_register.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("registerForm");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                var email = document.getElementById('email').value;
+                var username = document.getElementById('username').value;
+                var password = document.getElementById('password').value;
+                var pass_confirm = document.getElementById('password_confirm').value;
+                var facebook = document.getElementById('facebook').value;
+
+                if(password !== pass_confirm) {
+                    alert('Password not match');
+                } else {
+                const formData = new FormData(form);
+                formData.append('email', username);
+                formData.append('username', username);
+                formData.append('pasword', password);
+                formData.append('fb', facebook);
+
+                fetch("api/register.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Successful");
+                        setTimeout(() => {
+                            window.location.href = "login.html";
+                        }, 500);
+                    } else {
+                        alert(data.message);
+                        setTimeout(() => {
+                                form.reset();
+                        }, 500);
+                    }
+                })
+                .catch(error => {
+                    alert("Error: " + error);
+                });
+               }
+            });
+        });
+
+        function redirectToPage(url) {
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Anki Challenge Leaderboard</h1>
+    </header>
+    <section class="under_head">
+        <ul>
+            <li class="log"><strong>Register</strong></li>
+            <li class="board"><button class="but_board" onclick="redirectToPage('index.html')">Leaderboard</button></li>
+        </ul>
+    </section>
+    <section class="user_login">
+        <p>Already have an account? <a href="login.html">Login here!</a></p>
+        <form id="registerForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Input your Username" minlength="3" maxlength="20">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="Input your Email">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Input your Password" minlength="8" maxlength="50">
+            <label for="password_confirm">Again</label>
+            <input type="password" id="password_confirm" name="password_confirm" required placeholder="Input your Password again" minlength="8" maxlength="50">
+            <label for="facebook">Facebook</label>
+            <input type="text" id="facebook" name="facebook" placeholder="Input your facebook link">
+            <button class="logbut" type="submit">Register</button>
+        </form>
+    </section>
+    <section class="under_board">
+        <button class="src">Source</button>
+        <button class="addon">AnkiAddon</button>
+    </section>
+    <footer>
+        <p>Made by VietLe & KhiemPham</p>
+    </footer>
+</body>
+</html>

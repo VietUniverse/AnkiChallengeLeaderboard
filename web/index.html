@@ -1,16 +1,229 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banner Chạy Từ Phải Qua Trái</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Anki Challenge Leaderboard</title>
+    <link rel="stylesheet" href="static/styl.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: rgba(145, 156, 217, 0.2);
+            color: #fff;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        .show-popup-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .show-popup-btn:hover {
+            background-color: #0056b3;
+        }
+
+        body {
+            padding: 0;
+        }
+
+        .container {
+            padding: 1.5rem;
+        }
+    </style>
 </head>
+
 <body>
     <div class="banner-container">
-        <div class="banner">
-            <p>Đây là nội dung của banner chạy từ phải qua trái!</p>
+        <div class="banner" style="color:#f9d1d1">
+            <p>Admin: <a href="https://www.facebook.com/tui.la.phuc747" style="color: #ffa4b6">HoangPhuc</a> | Sponsor:
+                ...</p>
         </div>
     </div>
+    <div class="container">
+        <header>
+            <h1>Anki Challenge Leaderboard</h1>
+            <p>Let's fight to become the winner</p>
+            <p id="welcome-message" style="display: none;"></p>
+        </header>
+        <section class="user_use">
+            <ul style="margin-bottom:0;">
+                <li class="ldb">Leaderboard</li>
+                <li class="time">
+                    <select id="pages" name="pages" onchange="handleSelectChange(event)">
+                        <option value="today">Today</option>
+                        <option value="week">Week</option>
+                        <option value="challenge">Challenge</option>
+                    </select>
+                </li>
+                <li class="log">
+                    <button id="login-button" type="button" class="logbut"
+                        onclick="redirectToPage('login.html')">Login</button>
+                </li>
+                <li class="reg">
+                    <button id="register-button" type="button" class="regbut"
+                        onclick="redirectToPage('register.html')">Register</button>
+                </li>
+                <li class="logout">
+                    <button id="logout-button" type="button" class="logbut" style="display:none;"
+                        onclick="logoutUser()">Logout</button>
+                </li>
+            </ul>
+        </section>
+        <section class="on_board">
+            <button class="filbut"
+                style="background:none; border: none;color:#ffa4b6; width: 100%; text-align:left; cursor: default; font-size: 30px; margin-bottom: 0px;">Filter</button>
+            <button class="sbut" id="retentionButton">Retention</button>
+            <button class="sbut" id="reviewButton">Review</button>
+            <button class="sbut" id="timeButton">Time</button>
+            <div id="popup" class="popup"></div>
+        </section>
+        <section class="board">
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th class="pos">Position</th>
+                        <th class="name">Name</th>
+                        <th class="xp">XP</th>
+                        <th class="rev">Review</th>
+                        <th class="min">Minute</th>
+                        <th class="ret">Retention</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </section>
+        <section class="under_board">
+            <button class="src">Source</button>
+            <button class="addon">AnkiAddon</button>
+        </section>
+        <footer>
+            <p>Made by VietLe & KhiemPham</p>
+        </footer>
+    </div>
+    <script>
+        function handleSelectChange(event) {
+            var selectedValue = event.target.value;
+            fetchData(selectedValue);
+        }
+
+        function redirectToPage(url) {
+            window.location.href = url;
+        }
+
+        function fetchData(type) {
+            const data = {
+                type: 'leaderboard',
+                board_type: type
+            };
+            const urlEncodedData = new URLSearchParams(data).toString();
+
+            fetch('api/info.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: urlEncodedData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('.board tbody');
+                    tableBody.innerHTML = '';
+                    let res = 1;
+
+                    data.forEach(row => {
+                        const formattedTime = parseFloat(row.time).toFixed(2);
+                        const formattedReten = parseFloat(row.retention).toFixed(2) + "%";
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                        <td>${res}</td>
+                        <td><a style="text-decoration:none;color:#f9d1d1;" href="profile.php?username=${encodeURIComponent(row.name)}">${row.name || 'N/A'}</a></td>
+                        <td>${row.xp}</td>
+                        <td>${row.cards}</td>
+                        <td>${formattedTime}</td>
+                        <td>${formattedReten}</td>
+                    `;
+                        tableBody.appendChild(tr);
+                        res++;
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function getCookie(name) {
+            let cookieArr = document.cookie.split(";");
+            for (let i = 0; i < cookieArr.length; i++) {
+                let cookiePair = cookieArr[i].split("=");
+                if (name === cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        function checkUserAuthentication() {
+            let username = getCookie("username");
+            let token = getCookie("token");
+
+            if (username && token) {
+                document.getElementById("welcome-message").innerText = `Welcome, ${username}`;
+                document.getElementById("welcome-message").style.display = "inline";
+                document.getElementById("login-button").style.display = "none";
+                document.getElementById("register-button").style.display = "none";
+                document.getElementById("logout-button").style.display = "inline";
+            } else {
+                document.getElementById("welcome-message").style.display = "none";
+                document.getElementById("login-button").style.display = "inline";
+                document.getElementById("register-button").style.display = "inline";
+                document.getElementById("logout-button").style.display = "none";
+            }
+        }
+
+        function logoutUser() {
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.reload();
+        }
+        function showPopup(message) {
+            const popup = document.getElementById('popup');
+            popup.textContent = message;
+            popup.style.display = 'block';
+
+            setTimeout(function () {
+                popup.style.display = 'none';
+            }, 500);
+        }
+
+        document.getElementById('retentionButton').addEventListener('click', function () {
+            showPopup('Retention');
+        });
+
+        document.getElementById('reviewButton').addEventListener('click', function () {
+            showPopup('Review');
+        });
+
+        document.getElementById('timeButton').addEventListener('click', function () {
+            showPopup('Time');
+        });
+
+        window.onload = function () {
+            fetchData('today');
+            checkUserAuthentication();
+        };
+    </script>
 </body>
+
 </html>
