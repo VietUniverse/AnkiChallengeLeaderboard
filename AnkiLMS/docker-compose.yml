@@ -1,0 +1,50 @@
+services:
+  # 1. Database (PostgreSQL)
+  db:
+    image: postgres:15
+    container_name: ankilms_db
+    environment:
+      - POSTGRES_DB=ankilms_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. Backend (Django + DRF)
+  backend:
+    build: ./backend
+    container_name: ankilms_backend
+    tty: true        # Thêm dòng này
+    stdin_open: true # Thêm dòng này
+    volumes:
+      - ./backend:/code
+      - ./sync_data:/sync_data
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+
+  # 3. Frontend (Next.js)
+  frontend:
+    build: ./frontend
+    container_name: ankilms_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+
+  # 4. Anki Sync Server
+  sync_server:
+    image: python:3.9-slim
+    container_name: ankilms_sync
+    volumes:
+      - ./sync_data/collections:/data
+    environment:
+      - SYNC_BASE=/data
+      - SYNC_USER1=admin:password123  # Thêm dòng này để tạo user mặc định
+    command: >
+      sh -c "pip install anki && python3 -m anki.syncserver"
+    ports:
+      - "27701:27701"
+volumes:
+  postgres_data:
