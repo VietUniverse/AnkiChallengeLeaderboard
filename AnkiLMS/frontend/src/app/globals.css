@@ -1,26 +1,164 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-primary: #0b1329;
+    --bg-secondary: #0f1b38;
+    --bg-card: #132247;
+    --bg-muted: #1e2f5a;
+    --border-color: #1e3a70;
+    --text-primary: #ffffff;
+    --text-secondary: #8b9bb4;
+    
+    /* Parroto Palette */
+    --duo-blue: #2563eb;
+    --duo-blue-dark: #1d4ed8;
+    --duo-cyan: #0284c7;
+    --duo-orange: #f97316;
+    --duo-orange-dark: #ea580c;
+    --duo-amber: #eab308;
+    --duo-purple: #9333ea;
+    --duo-rose: #f43f5e;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Parroto Tactile 3D Buttons */
+.btn-duo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 0.875rem;
+  transition: all 0.12s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.4);
+  transform: translateY(0);
+}
+
+.btn-duo:active {
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
+  transform: translateY(4px);
+}
+
+.btn-duo-primary {
+  background-color: #2563eb;
+  color: white;
+  border-bottom: 4px solid #1d4ed8;
+}
+.btn-duo-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-duo-orange {
+  background-color: #f97316;
+  color: white;
+  border-bottom: 4px solid #ea580c;
+}
+.btn-duo-orange:hover {
+  filter: brightness(1.1);
+}
+
+.btn-duo-pro {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  color: white;
+  border-bottom: 4px solid #4338ca;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.btn-duo-pro:hover {
+  filter: brightness(1.15);
+}
+
+/* Cards Duo */
+.card-duo {
+  background-color: #111d38;
+  border: 1.5px solid #1d2e54;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+.card-duo-hover:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 0 rgba(37, 99, 235, 0.25);
+}
+
+/* Additional Button Variants */
+.btn-duo-purple {
+  background-color: #9333ea;
+  color: white;
+  border-bottom: 4px solid #7e22ce;
+}
+.btn-duo-purple:hover {
+  filter: brightness(1.1);
+}
+
+.btn-duo-danger {
+  background-color: #ef4444;
+  color: white;
+  border-bottom: 4px solid #dc2626;
+}
+.btn-duo-danger:hover {
+  filter: brightness(1.1);
+}
+
+.btn-duo-success {
+  background-color: #22c55e;
+  color: white;
+  border-bottom: 4px solid #16a34a;
+}
+.btn-duo-success:hover {
+  filter: brightness(1.1);
+}
+
+.btn-duo-warning {
+  background-color: #eab308;
+  color: #1e293b;
+  border-bottom: 4px solid #ca8a04;
+}
+.btn-duo-warning:hover {
+  filter: brightness(1.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1329;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2f5a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2b437e;
+}
+
+/* Noto Sans KR font for Korean text */
+.font-noto {
+  font-family: 'Noto Sans KR', sans-serif;
 }
